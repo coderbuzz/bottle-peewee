@@ -70,8 +70,9 @@ def load_class(s):
 
 class Database(object):
 
-    def __init__(self, db_name, db_engine, autocommit=True):
+    def __init__(self, db_name, db_engine, autocommit=True, **kwargs):
         self.database_config = {'name': db_name, 'engine': db_engine, 'autocommit': autocommit}
+        self.database_config.update(kwargs)
         try:
             self.database_name = self.database_config.pop('name')
             self.database_engine = self.database_config.pop('engine')
