@@ -70,8 +70,9 @@ def load_class(s):
 
 class Database(object):
 
-    def __init__(self, db_name, db_engine, autocommit=True):
+    def __init__(self, db_name, db_engine, autocommit=True, **kwargs):
         self.database_config = {'name': db_name, 'engine': db_engine, 'autocommit': autocommit}
+        self.database_config.update(kwargs)
         try:
             self.database_name = self.database_config.pop('name')
             self.database_engine = self.database_config.pop('engine')
@@ -148,7 +149,6 @@ class PeeweePlugin(object):
 
         def wrapper(*args, **kwargs):
             # Connect to the database
-            print 'CONNECT()'
             db.database.connect()
             # Add the connection handle as a keyword argument.
             kwargs[keyword] = db
@@ -161,12 +161,11 @@ class PeeweePlugin(object):
             # except HTTPResponse, e:
             #     if db.autocommit: db.database.commit()
             #     raise
-            except Exception, e:
+            except Exception as e:
                 db.database.rollback()
                 raise HTTPError(500, "Database Error: %s" % str(e), e)
             finally:
                 db.database.close()
-                print 'DISCONNECT()'
             return rv
 
         # Replace the route callback with the wrapped one.
